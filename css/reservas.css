@@ -1,0 +1,82 @@
+body {
+
+   background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(178,225,255,1)), color-stop(100%,rgba(102,182,252,1))); /* Chrome,Safari4+ */
+   background: -webkit-linear-gradient(top,  rgba(178,225,255,1) 0%,rgba(102,182,252,1) 100%); /* Chrome10+,Safari5.1+ */
+   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b2e1ff', endColorstr='#66b6fc',GradientType=0 ); /* IE6-9 */
+   position: relative;
+   margin: 0;
+   font-family: 'Work Sans', Arial, Helvetica, sans-serif;
+   min-height: 100%;
+}
+
+input {
+  font-size: 0.75rem;
+  height: 2.5rem;
+  padding: 0 1.5rem;
+  color: white;
+  background: #539CBA;
+  text-transform: uppercase;
+  border-radius: .25rem;
+  letter-spacing: .2em;
+  transition: background .2s;
+}
+input:focus {
+  outline: 0;
+}
+input:hover,
+input:focus {
+  background: #14466A;
+}
+
+.header {
+   width: 100%;
+   height: 100px;
+  
+   font-weight: bold;
+   text-align: center;
+}
+
+.fondo { 
+   width: 100%;
+   height: 100%;
+   
+}
+
+.principal { 
+   float: left;
+   width: 50%;
+   height: 100%;
+   text-align: center;
+   font-weight: bold;
+}
+
+.aside { 
+   float: right;
+   width: 50%;
+   height: 100%;
+   text-align: center;
+   font-weight: bold;
+
+}
+.objeto {
+   float: left;
+   margin-top: 5%; 
+   margin-left: 10%;
+   margin-bottom: 10%;
+   width: 250px;
+   height: 150px;
+   text-align: center;
+
+}
+
+.objeto2 {
+   float: left;
+   margin-top: 5%; 
+   margin-left: 10%;
+   margin-bottom: 5%;
+   width: 250px;
+   height: 150px;
+
+   text-align: center;
+
+}
