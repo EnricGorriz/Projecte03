@@ -3,7 +3,7 @@ SET time_zone = "+00:00";
 
 
 CREATE DATABASE IF NOT EXISTS `bd_reservas_millorat` DEFAULT CHARACTER SET utf8 COLLATE utf8_spanish_ci;
-USE `bd_reservas`;
+USE `bd_reservas_millorat`;
 
 
 /*Estructura de tabla para la tabla `tbl_recursos`*/
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `tbl_recursos` (
 			MODIFY `rec_id` int(11) NOT NULL AUTO_INCREMENT;	
 /* Modificació de la taula Recursos*/;
 			ALTER TABLE `tbl_recursos`
-			ADD id_tipus_recurs varchar(50) NULL;	
+			ADD id_tipus_recurs int(11) NULL;	
 /* INSERTAR DADES A LA TAULA RECURSOS */
 INSERT INTO `tbl_recursos`(`rec_id`, `rec_contingut`, `rec_descripció`, `id_tipus_recurs`)VALUES
 (1,'Aula de teoria 1', 'Aula de teoria per 30 alumnes', 1),
