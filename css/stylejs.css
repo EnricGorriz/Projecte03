@@ -1,0 +1,57 @@
+#ejercicios{
+	width:100%;
+}
+.modalmask{
+	position:fixed;
+	top:0;
+	left:0;
+	right:0;
+	bottom:0;
+	padding-top:100px;
+	background: rgba(0,0,0,0.8);
+	z-index:99999;
+	visibility:hidden;
+	-webkit-transition: opacity 400ms ease-in;
+	-moz-transition: opacity 400ms ease-in;
+	transition: opacity 400ms ease-in;
+	pointer-events: none;
+}
+.modalmask:target{
+	visibility:visible;
+	pointer-events: auto;
+}
+.modalbox{
+	width:600px;
+	position:relative;
+	padding:5px 20px 13px 20px;
+	background: #FFF;
+	border-radius:3px;
+	-webkit-transition: all 500ms ease-in;
+	-moz-transition: all 500ms ease-in;
+	transition: all 500ms ease-in;
+}
+.movedown{
+	margin:0 auto;
+}
+.rotate{
+	margin:10% auto;
+	-webkit-transform: scale(-5,-5);
+	transform:scale(-5,-5);
+}
+.resize{
+	margin:10% auto;
+	width:0;
+	height:0;
+}
+.close {
+	background:#606061;
+	color:#FFFFFF;
+	line-height: 25px;
+	position: absolute;
+	right:1px;
+	bottom:1px;
+	width:47px;
+	margin-left:1px;
+	text-decoration:none;
+	border-radius:3px;
+}

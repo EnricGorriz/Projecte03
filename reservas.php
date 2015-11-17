@@ -9,7 +9,7 @@ session_start();
 		if(isset($_POST['login'])){	
 			if(isset($_POST['mail']))$mail = $_POST['mail'];
 			if(isset($_POST['contraseña']))$contraseña = $_POST['contraseña'];
-			$con = mysqli_connect('localhost', 'root', 'DAW22015', 'bd_reservas');
+			$con = mysqli_connect('localhost', 'root', 'DAW22015', 'bd_reservas_millorat');
 			$sql=("SELECT * FROM `tbl_usuario` WHERE usu_email = '$mail' && usu_contra = '$contraseña' ");
 			//echo $sql;
 			$datos = mysqli_query($con, $sql);
@@ -30,7 +30,7 @@ session_start();
 		}
 		if(isset($_POST['manteniment'])){
 			if(isset($_POST['manteniment']))$manteniment = $_POST['manteniment'];
-			$con = mysqli_connect('localhost', 'root', 'DAW22015', 'bd_reservas');
+			$con = mysqli_connect('localhost', 'root', 'DAW22015', 'bd_reservas_millorat');
 			//echo $manteniment;
 			$sql1=("SELECT * FROM `tbl_recursos` WHERE rec_id = $manteniment");
 			echo $sql1;
@@ -54,7 +54,7 @@ session_start();
 		}
 		if(isset($_POST['reservar'])){
 			$reservar = $_POST['reservar'];
-			$con = mysqli_connect('localhost', 'root', 'DAW22015', 'bd_reservas');
+			$con = mysqli_connect('localhost', 'root', 'DAW22015', 'bd_reservas_millorat');
 			//echo $reservar;
 			$sql1=("SELECT * FROM `tbl_recursos` WHERE rec_id = $reservar");
 			//echo $sql1;
@@ -103,9 +103,10 @@ session_start();
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	    <meta name="viewport" content="width=device-width, initial-scale=1">
 	    <link rel="stylesheet" href="css/stylesBar.css">
+		<link rel="stylesheet" href="css/stylejs.css">
         <link rel="stylesheet" type="text/css" href="css/reservas.css" />
 	    <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
-	    <script src="js/scriptBar.js"></script>
+	    <script type="text/javascript" src="js/scriptBar.js"></script>
 	</head>
     <body>
 		<div class="header">
@@ -119,8 +120,7 @@ session_start();
 						echo "<li><a href='administrar.php'>ADMINISTRAR</a></li>";
 					}
 					?>
-					<li><?php echo "<br/>&nbsp;&nbsp; Bienvenido $_SESSION[nombre] ";
-					?></li>
+					<li><?php echo "<br/>&nbsp;&nbsp; Bienvenido $_SESSION[nombre] ";?></li>
 
 				</ul>
 			</div>
@@ -133,14 +133,15 @@ session_start();
 			<div class="principal">
 				<h1>AULAS</h1>
 				<?php
-					$con = mysqli_connect('localhost', 'root', 'DAW22015', 'bd_reservas');
-					$sql = ("SELECT * FROM `tbl_recursos` WHERE tbl_recursos.rec_tipo_rec = 1");
+					$con = mysqli_connect('localhost', 'root', 'DAW22015', 'bd_reservas_millorat');
+					$sql = ("SELECT * FROM `tbl_recursos` WHERE tbl_recursos.id_tipus_recurs >= 1 && tbl_recursos.id_tipus_recurs <= 4");
 					$datos = mysqli_query($con, $sql);
                     if(mysqli_num_rows($datos) > 0){
                         while($cerca = mysqli_fetch_array($datos)){
 							$manteniment=1;
 							$id = $cerca['rec_id'];
                             $cerca['rec_contingut']= utf8_encode($cerca['rec_contingut']);
+							$nom = $cerca['rec_contingut'];
                             $img = "images/$cerca[rec_contingut].jpg";
 							if($cerca['rec_desactivat']=="1"){
 								if($cerca['rec_reservado']=="1"){
@@ -152,30 +153,17 @@ session_start();
 								$img = "images/$cerca[rec_contingut]mantenimiento.jpg";
 								$manteniment=0;
 							}
-                            echo "<div class='objeto'>$cerca[rec_contingut]<div class='objeto2'><img src='$img'><br/></div>";
-							if($manteniment==1){
-								echo "<form action='#' method='POST'>";
-								echo "<input type='hidden' name='reservar' value='$cerca[rec_id]'/>";
-								if($cerca['rec_reservado']=="1"){
-									echo "<input type='submit' value='RESERVAR'/>";
-								}else{
-									$con1 = mysqli_connect('localhost', 'root', 'DAW22015', 'bd_reservas');
-									$sql1 = ("SELECT * FROM `tbl_reservas` WHERE tbl_reservas.idRecurso=$id ");
-									$datos1 = mysqli_query($con1, $sql1);
-									$usuari=$_SESSION['mail'];
-									//echo $sql1;
-									if(mysqli_num_rows($datos1) > 0){
-										while($cercaret = mysqli_fetch_array($datos1)){
-											if($usuari==$cercaret['UsuarioReservante']){
-												echo "<input type='submit' value='RETORNAR'/>";
-												break;
-											}
-										}
-									}
-									mysqli_close($con1);
-								}
-								echo "</form>";
-							}
+                            echo "<div id='nom' class='objeto'>$cerca[rec_contingut]<div class='objeto2'><a href='#reserva' onclick='function1($id)'><img src='$img'/></a><br/></div>";
+?>
+<script>
+var function1=function($id){
+	var element = $id;
+	document.getElementById("id").value = element;
+	var articulo = document.getElementById("nom").innerHTML;
+	document.getElementById("tituloReserva").value = articulo;
+}
+</script>
+<?php
 							echo "</div>";
                         }
                     }
@@ -185,8 +173,8 @@ session_start();
 			<div class="aside">
 				<h1>MATERIALES</h1>
 				<?php
-					$con = mysqli_connect('localhost', 'root', 'DAW22015', 'bd_reservas');
-					$sql = ("SELECT * FROM `tbl_recursos` WHERE tbl_recursos.rec_tipo_rec = 0");
+					$con = mysqli_connect('localhost', 'root', 'DAW22015', 'bd_reservas_millorat');
+					$sql = ("SELECT * FROM `tbl_recursos` WHERE tbl_recursos.id_tipus_recurs >= 5 && tbl_recursos.id_tipus_recurs <= 8");
 					$datos = mysqli_query($con, $sql);
                    if(mysqli_num_rows($datos) > 0){
                         while($cerca = mysqli_fetch_array($datos)){
@@ -204,35 +192,29 @@ session_start();
 								$img = "images/$cerca[rec_contingut]mantenimiento.jpg";
 								$manteniment=0;
 							}
-                            echo "<div class='objeto'>$cerca[rec_contingut]<div class='objeto2'><img src='$img'><br/></div>";
-							if($manteniment==1){
-								echo "<form action='#' method='POST'>";
-								echo "<input type='hidden' name='reservar' value='$cerca[rec_id]'/>";
-								if($cerca['rec_reservado']=="1"){
-									echo "<input type='submit' value='RESERVAR'/>";
-								}else{
-									$con1 = mysqli_connect('localhost', 'root', 'DAW22015', 'bd_reservas');
-									$sql1 = ("SELECT * FROM `tbl_reservas` WHERE tbl_reservas.idRecurso=$id ");
-									$datos1 = mysqli_query($con1, $sql1);
-									$usuari=$_SESSION['mail'];
-									//echo $sql1;
-									if(mysqli_num_rows($datos1) > 0){
-										while($cercaret = mysqli_fetch_array($datos1)){
-											if($usuari==$cercaret['UsuarioReservante']){
-												echo "<input type='submit' value='RETORNAR'/>";
-												break;
-											}
-										}
-									}
-									mysqli_close($con1);
-								}
-								echo "</form>";
-							}
+                            echo "<div class='objeto'>$cerca[rec_contingut]<div class='objeto2'><a href='#reserva' onclick='function1($id)'><img src='$img'/></a></div>";
 							echo "</div>";
                         }
                     }
 					mysqli_close($con);
 				?>
+			</div>
+		</div>
+		<div id="reserva" class="modalmask">
+			<div class="modalbox movedown" id="reservaContent">
+				<a href="reservas.php" title="Close" class="close">[close]</a>
+				<h2 id="tituloReserva">Titulo</h2>
+				<div id="contenidoReserva">Para reservar el producto no olvide rellenar todos los campos.</div>
+				<form action="reservas.php" method="GET">
+					<h4> Fecha Inicio </h4>
+					<input id="fechaini" type="date" name="fechaini" required>
+					<input id="horaini"type="time" name="horaini" value="10:00:00" max="22:00:00" min="08:00:00" step="1"><br/>
+					<h4> Fecha Final </h4>
+					<input id="fechafin" type="date" name="fechafin" required>
+					<input id="horafin"type="time" name="horafin" value="10:00:00" max="22:00:00" min="08:00:00" step="1"><br/>
+					<input type="hidden" id="id" name="id">
+					<br/><br/><br/><input type="submit">
+				</form>
 			</div>
 		</div>
     </body>
@@ -245,3 +227,8 @@ session_start();
 }
 
 ?>
+<script>
+var function2 = function(){
+	object.onmouseover=function(){myScript};
+}
+</script>
