@@ -7,7 +7,7 @@ session_start();
 	if(isset($login)){
 		if(isset($_POST['manteniment'])){
 			if(isset($_POST['manteniment']))$manteniment = $_POST['manteniment'];
-			$con = mysqli_connect('localhost', 'root', 'DAW22015', 'bd_reservas');
+			$con = mysqli_connect('localhost', 'root', 'DAW22015', 'bd_reservas_millorat');
 			//echo $manteniment;
 			$sql1=("SELECT * FROM `tbl_recursos` WHERE rec_id = $manteniment");
 			//echo $sql1;
@@ -66,7 +66,7 @@ session_start();
 			<div class="principal">
 				<h1>AULAS</h1>
 				<?php
-					$con = mysqli_connect('localhost', 'root', 'DAW22015', 'bd_reservas');
+					$con = mysqli_connect('localhost', 'root', 'DAW22015', 'bd_reservas_millorat');
 					$sql = ("SELECT * FROM `tbl_recursos` WHERE tbl_recursos.rec_tipo_rec= 1");
 					$datos = mysqli_query($con, $sql);
                     if(mysqli_num_rows($datos) > 0){
@@ -79,7 +79,7 @@ session_start();
 										echo "<b>" . $cerca['rec_contingut'] . "</b>";
 										echo "</td>";
 										echo "<td>";
-										$con1 = mysqli_connect('localhost', 'root', 'DAW22015', 'bd_reservas');
+										$con1 = mysqli_connect('localhost', 'root', 'DAW22015', 'bd_reservas_millorat');
 										$sql1 = ("SELECT * FROM `tbl_reservas` WHERE tbl_reservas.idRecurso=$id ");
 										$datos1 = mysqli_query($con1, $sql1);
 										$usuari=$_SESSION['mail'];
@@ -134,7 +134,7 @@ session_start();
 			<div class="aside">
 				<h1>MATERIALES</h1>
 				<?php
-					$con = mysqli_connect('localhost', 'root', 'DAW22015', 'bd_reservas');
+					$con = mysqli_connect('localhost', 'root', 'DAW22015', 'bd_reservas_millorat');
 					$sql = ("SELECT * FROM `tbl_recursos` WHERE tbl_recursos.rec_tipo_rec= 0");
 					$datos = mysqli_query($con, $sql);
                     if(mysqli_num_rows($datos) > 0){
@@ -147,7 +147,7 @@ session_start();
 										echo "<b>" . $cerca['rec_contingut'] . "</b>";
 										echo "</td>";
 										echo "<td>";
-										$con1 = mysqli_connect('localhost', 'root', 'DAW22015', 'bd_reservas');
+										$con1 = mysqli_connect('localhost', 'root', 'DAW22015', 'bd_reservas_millorat');
 										$sql1 = ("SELECT * FROM `tbl_reservas` WHERE tbl_reservas.idRecurso=$id ");
 										$datos1 = mysqli_query($con1, $sql1);
 										$usuari=$_SESSION['mail'];

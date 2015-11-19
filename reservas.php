@@ -3,8 +3,7 @@ session_start();
 	if(isset($_SESSION['nombre']))$login=1;
 	if(isset($_POST['login']))$login=1;
 	if(isset($_POST['reservar']))$login=1;
-	if(isset($_POST['retornar']))$login=1;
-	if(isset($_POST['manteniment']))$login=1;
+	if(isset($_POST['id']))$login=1;
 	if(isset($login)){
 		if(isset($_POST['login'])){	
 			if(isset($_POST['mail']))$mail = $_POST['mail'];
@@ -28,68 +27,24 @@ session_start();
 			}
 			mysqli_close($con);
 		}
-		if(isset($_POST['manteniment'])){
-			if(isset($_POST['manteniment']))$manteniment = $_POST['manteniment'];
+		if(isset($_POST['id'])){
+			$id = $_POST['id'];
+			$fechaini = $_POST['fechaini'];
+			$horaini = $_POST['horaini'];
+			$fechafin = $_POST['fechafin'];
+			$horafin = $_POST['horafin'];
 			$con = mysqli_connect('localhost', 'root', 'DAW22015', 'bd_reservas_millorat');
-			//echo $manteniment;
-			$sql1=("SELECT * FROM `tbl_recursos` WHERE rec_id = $manteniment");
-			echo $sql1;
-			$datos = mysqli_query($con, $sql1);
-			if(mysqli_num_rows($datos) > 0){
-				while($cerca = mysqli_fetch_array($datos)){
-					$validar = $cerca['rec_desactivat'];
-					if ($validar == 1) {
-						$sql=("UPDATE tbl_recursos SET rec_desactivat = 0 WHERE rec_id = $manteniment ");
-						$estat = "averiat";
-						echo $estat;
-					}else{
-						$sql=("UPDATE tbl_recursos SET rec_desactivat = 1 WHERE rec_id = $manteniment ");
-						$estat = "Ja en funcionament";
-						echo $estat;
-					}
-				}
-			}
-			mysqli_query($con, $sql);	
-			mysqli_close($con);
-		}
-		if(isset($_POST['reservar'])){
-			$reservar = $_POST['reservar'];
-			$con = mysqli_connect('localhost', 'root', 'DAW22015', 'bd_reservas_millorat');
-			//echo $reservar;
-			$sql1=("SELECT * FROM `tbl_recursos` WHERE rec_id = $reservar");
+			$sql1=("SELECT * FROM `tbl_reservas` WHERE idRecurso = $id && res_fecha_ini>='$fechaini' && res_hora_ini>='$horaini' && res_hora_fin<='$horafin' && res_fecha_fin<='$fechafin'");
 			//echo $sql1;
 			$datos = mysqli_query($con, $sql1);
-			if(mysqli_num_rows($datos) > 0){
-				while($cerca = mysqli_fetch_array($datos)){
-					$validar = $cerca['rec_reservado'];
-					if ($validar == 1) {
-						$hoy = getdate();
-						$hora=($hoy['hours'].':'.$hoy['minutes'].':'.$hoy['seconds']);
-						$data=($hoy['year'].'-'.$hoy['mon'].'-'.$hoy['mday']);
-						//echo "$hora<br/>$data";
-						$usuari=$_SESSION['mail'];
-						$sql=("UPDATE tbl_recursos SET rec_reservado = 0 WHERE rec_id = $reservar ");
-						$estat = "Recurs reserva't";
-						mysqli_query($con, $sql);	
-						$sql2=("INSERT INTO `tbl_reservas`(`res_fecha_ini`, `res_hora_ini`, `UsuarioReservante`, `idRecurso`)VALUES
-						('$data','$hora','$usuari', $reservar)");
-						//echo $sql2;
-						mysqli_query($con, $sql2);	
-					}else{
-						$hoy = getdate();
-						$hora=($hoy['hours'].':'.$hoy['minutes'].':'.$hoy['seconds']);
-						$data=($hoy['year'].'-'.$hoy['mon'].'-'.$hoy['mday']);
-						//echo "$hora<br/>$data";
-						$usuari=$_SESSION['mail'];
-						$sql=("UPDATE tbl_recursos SET rec_reservado = 1 WHERE rec_id = $reservar ");
-						$estat = "Recurs retorna't";
-						mysqli_query($con, $sql);	
-						$sql2=("UPDATE `tbl_reservas` SET `res_fecha_fin` = '$data',  `res_hora_fin` = '$hora' WHERE idRecurso = $reservar &&  UsuarioReservante = '$usuari' ORDER BY tbl_reservas.res_fecha_fin ASC LIMIT 1");
-						//echo $sql2;
-						mysqli_query($con, $sql2);	
-					}
-					break;
-				}
+			if(mysqli_num_rows($datos) >= 1){
+				echo "Hi ha una reserva que presenta conflicte amb la que s'ha intentat crear";
+			}else{
+					$usuari=$_SESSION['mail'];
+					$sql=("INSERT INTO `tbl_reservas`(`res_fecha_ini`, `res_hora_ini`, `res_fecha_fin`, `res_hora_fin`, `UsuarioReservante`, `idRecurso`) VALUES ('$fechaini', '$horaini','$fechafin','$horafin','$usuari',$id)");
+					//echo $sql;
+					mysqli_query($con, $sql);
+					echo "<br/> Reserva creada correctamente";
 			}
 						
 			mysqli_close($con);
@@ -107,6 +62,21 @@ session_start();
         <link rel="stylesheet" type="text/css" href="css/reservas.css" />
 	    <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
 	    <script type="text/javascript" src="js/scriptBar.js"></script>
+		<script>
+			var function1=function($id){
+				var element = $id;
+				document.getElementById("id").value = element;
+				document.getElementById("foto").src = "images/" + element + ".jpg";
+				var x = new XMLHttpRequest();
+				x.onreadystatechange = function() {
+					if (x.readyState == 4 && x.status == 200) {
+						document.getElementById("contenidoReserva").innerHTML = x.responseText;
+					}
+				};
+				x.open("GET","reserva.proc.php?id="+element,true);
+				x.send();
+			}
+		</script>
 	</head>
     <body>
 		<div class="header">
@@ -143,27 +113,7 @@ session_start();
                             $cerca['rec_contingut']= utf8_encode($cerca['rec_contingut']);
 							$nom = $cerca['rec_contingut'];
                             $img = "images/$cerca[rec_contingut].jpg";
-							if($cerca['rec_desactivat']=="1"){
-								if($cerca['rec_reservado']=="1"){
-									$img = "images/$cerca[rec_contingut].jpg";
-								}else{
-									$img = "images/$cerca[rec_contingut]ocupada.jpg";
-								}
-							}else{
-								$img = "images/$cerca[rec_contingut]mantenimiento.jpg";
-								$manteniment=0;
-							}
-                            echo "<div id='nom' class='objeto'>$cerca[rec_contingut]<div class='objeto2'><a href='#reserva' onclick='function1($id)'><img src='$img'/></a><br/></div>";
-?>
-<script>
-var function1=function($id){
-	var element = $id;
-	document.getElementById("id").value = element;
-	var articulo = document.getElementById("nom").innerHTML;
-	document.getElementById("tituloReserva").value = articulo;
-}
-</script>
-<?php
+                            echo "<div class='objeto'>$cerca[rec_contingut]<div class='objeto2'><a href='#reserva' onclick='javascript:function1($id)'><img src='$img'/></a><br/></div>";
 							echo "</div>";
                         }
                     }
@@ -176,23 +126,14 @@ var function1=function($id){
 					$con = mysqli_connect('localhost', 'root', 'DAW22015', 'bd_reservas_millorat');
 					$sql = ("SELECT * FROM `tbl_recursos` WHERE tbl_recursos.id_tipus_recurs >= 5 && tbl_recursos.id_tipus_recurs <= 8");
 					$datos = mysqli_query($con, $sql);
-                   if(mysqli_num_rows($datos) > 0){
+                    if(mysqli_num_rows($datos) > 0){
                         while($cerca = mysqli_fetch_array($datos)){
 							$manteniment=1;
 							$id = $cerca['rec_id'];
                             $cerca['rec_contingut']= utf8_encode($cerca['rec_contingut']);
+							$nom = $cerca['rec_contingut'];
                             $img = "images/$cerca[rec_contingut].jpg";
-							if($cerca['rec_desactivat']=="1"){
-								if($cerca['rec_reservado']=="1"){
-									$img = "images/$cerca[rec_contingut].jpg";
-								}else{
-									$img = "images/$cerca[rec_contingut]ocupada.jpg";
-								}
-							}else{
-								$img = "images/$cerca[rec_contingut]mantenimiento.jpg";
-								$manteniment=0;
-							}
-                            echo "<div class='objeto'>$cerca[rec_contingut]<div class='objeto2'><a href='#reserva' onclick='function1($id)'><img src='$img'/></a></div>";
+                            echo "<div class='objeto'>$cerca[rec_contingut]<div class='objeto2'><a href='#reserva' onclick='javascript:function1($id)'><img src='$img'/></a><br/></div>";
 							echo "</div>";
                         }
                     }
@@ -202,17 +143,27 @@ var function1=function($id){
 		</div>
 		<div id="reserva" class="modalmask">
 			<div class="modalbox movedown" id="reservaContent">
-				<a href="reservas.php" title="Close" class="close">[close]</a>
-				<h2 id="tituloReserva">Titulo</h2>
-				<div id="contenidoReserva">Para reservar el producto no olvide rellenar todos los campos.</div>
-				<form action="reservas.php" method="GET">
+				<a href="reservas.php" title="Close" class="close">[Atras]</a>
+				<h2 id="tituloReserva">RESERVA </h2>
+				<img id="foto" src=''/><br/><br/>
+				
+				<div id="contenidoReserva">Para reservar, no olvide rellenar todos los campos.</div>
+				<form action="reservas.php" method="POST">
 					<h4> Fecha Inicio </h4>
-					<input id="fechaini" type="date" name="fechaini" required>
-					<input id="horaini"type="time" name="horaini" value="10:00:00" max="22:00:00" min="08:00:00" step="1"><br/>
+					<input id="fechaini" type="date" name="fechaini" min='<?php echo date("Y-m-d");?>' value='<?php echo date("Y-m-d");?>'required>
+					<?php
+					$today1 = date("H")+1;
+					$today1.= date(":00");
+					?>
+					<input id="horaini"type="time" name="horaini" value='<?php echo  $today1;?>' max="20:00" min="08:00" step="1"><br/>
 					<h4> Fecha Final </h4>
 					<input id="fechafin" type="date" name="fechafin" required>
-					<input id="horafin"type="time" name="horafin" value="10:00:00" max="22:00:00" min="08:00:00" step="1"><br/>
-					<input type="hidden" id="id" name="id">
+					<?php
+					$today = date("H")+2;
+					$today.= date(":00");
+					?>
+					<input id="horafin"type="time" name="horafin" value='<?php echo $today;?>' max="20:00" min="08:00" step="1"><br/>
+					<input type="hidden" id="id" name="id" value="0">
 					<br/><br/><br/><input type="submit">
 				</form>
 			</div>
@@ -225,10 +176,4 @@ var function1=function($id){
 	header("Location: index.php");
 	die();
 }
-
 ?>
-<script>
-var function2 = function(){
-	object.onmouseover=function(){myScript};
-}
-</script>

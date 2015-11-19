@@ -93,9 +93,9 @@ INSERT INTO `tbl_usuario`(`usu_email`, `usu_contra`, `usu_nom`, `usu_rang`)VALUE
 CREATE TABLE IF NOT EXISTS `tbl_reservas` (
 	`res_id` int(11) NOT NULL,
 	`res_fecha_ini` date NOT NULL,
-	`res_hora_ini` varchar(8) NOT NULL,
+	`res_hora_ini` varchar(5) NOT NULL,
 	`res_fecha_fin` date NOT NULL,
-	`res_hora_fin` varchar(8) NOT NULL,
+	`res_hora_fin` varchar(5) NOT NULL,
 	`res_incidencia` boolean NOT NULL default true,
 	`res_incidencia_coment` varchar(255) NOT NULL,
 	`res_incidencia_usu_email` varchar(50) NOT NULL
